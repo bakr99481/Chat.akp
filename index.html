@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>واتس AI · شغال بالكامل</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: #0d141e;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .whatsapp-container {
+            width: 100%;
+            height: 100vh;
+            background: #121c28;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .wa-header {
+            background: #1f2c38;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-bottom: 1px solid #2a3942;
+        }
+
+        .avatar {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #25D366, #075E54);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-name {
+            font-weight: bold;
+            color: #e9edef;
+            font-size: 1.1rem;
+        }
+
+        .contact-status {
+            font-size: 0.7rem;
+            color: #8696a0;
+        }
+
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background-image: radial-gradient(#1f2c38 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        .message {
+            display: flex;
+            max-width: 80%;
+            margin-bottom: 6px;
+        }
+
+        .message.ai {
+            align-self: flex-start;
+            justify-content: flex-start;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            justify-content: flex-end;
+        }
+
+        .bubble {
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .ai .bubble {
+            background: #202c38;
+            color: #e9edef;
+            border-top-left-radius: 4px;
+        }
+
+        .user .bubble {
+            background: #005c4b;
+            color: white;
+            border-top-right-radius: 4px;
+        }
+
+        .timestamp {
+            font-size: 0.65rem;
+            color: #8696a0;
+            margin-top: 4px;
+            text-align: right;
+            padding-right: 8px;
+        }
+
+        .input-bar {
+            background: #1f2c38;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-top: 1px solid #2a3942;
+        }
+
+        .input-bar input {
+            flex: 1;
+            background: #2a3942;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 28px;
+            color: white;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .input-bar input::placeholder {
+            color: #8696a0;
+        }
+
+        .input-bar button {
+            background: #005c4b;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mic-btn {
+            background: #2a3942 !important;
+        }
+
+        .emoji-btn {
+            background: #2a3942 !important;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            padding: 6px 12px;
+            background: #202c38;
+            width: fit-content;
+            border-radius: 20px;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            background: #8696a0;
+            border-radius: 50%;
+            animation: bounce 1.2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-6px); }
+        }
+
+        .chat-area::-webkit-scrollbar { width: 4px; }
+        .chat-area::-webkit-scrollbar-track { background: transparent; }
+        .chat-area::-webkit-scrollbar-thumb { background: #2a3942; border-radius: 10px; }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+<div class="whatsapp-container">
+    <div class="wa-header">
+        <div class="avatar"><i class="fas fa-robot"></i></div>
+        <div class="contact-info">
+            <div class="contact-name">AI · الذكي الفائق</div>
+            <div class="contact-status">🟢 متصل · ذاكرة دائمة</div>
+        </div>
+    </div>
+
+    <div class="chat-area" id="chatMessages">
+        <div class="message ai">
+            <div class="bubble">
+                🧠 مرحباً! أنا ذكاء اصطناعي بذاكرة دائمة وبصوت.<br>
+                🔥 اسألني أي حاجة، أنا فاهمك وبفتكر كل اللي بنقوله.
+                <div class="timestamp">الآن</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="input-bar">
+        <input type="text" id="messageInput" placeholder="اكتب رسالة..." autocomplete="off">
+        <button id="emojiBtn" class="emoji-btn"><i class="far fa-smile-wink"></i></button>
+        <button id="micBtn" class="mic-btn"><i class="fas fa-microphone"></i></button>
+        <button id="sendBtn"><i class="fas fa-paper-plane"></i></button>
+    </div>
+</div>
+
+<script>
+    // ------------------- مفتاح OpenRouter (شغال فعليًا) -------------------
+    const API_KEY = "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";
+    const API_URL = "https://openrouter.ai/api/v1/chat/completions";
+
+    let chatHistory = [];
+
+    // تحميل الذاكرة التاريخية
+    function loadMemory() {
+        const saved = localStorage.getItem("whats_ai_memory");
+        if (saved) chatHistory = JSON.parse(saved);
+        else chatHistory = [];
+    }
+
+    function saveMemory() {
+        localStorage.setItem("whats_ai_memory", JSON.stringify(chatHistory.slice(-100)));
+    }
+
+    function addMessageToUI(text, sender, timestamp = null) {
+        const chatDiv = document.getElementById("chatMessages");
+        const messageWrapper = document.createElement("div");
+        messageWrapper.className = `message ${sender}`;
+        const bubble = document.createElement("div");
+        bubble.className = "bubble";
+        bubble.innerHTML = text.replace(/\n/g, "<br>");
+        const timeSpan = document.createElement("div");
+        timeSpan.className = "timestamp";
+        const now = timestamp || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        timeSpan.innerText = now;
+        bubble.appendChild(timeSpan);
+        messageWrapper.appendChild(bubble);
+        chatDiv.appendChild(messageWrapper);
+        chatDiv.scrollTop = chatDiv.scrollHeight;
+    }
+
+    function showTyping() {
+        const chatDiv = document.getElementById("chatMessages");
+        const typingDiv = document.createElement("div");
+        typingDiv.className = "message ai";
+        typingDiv.id = "typingIndicator";
+        typingDiv.innerHTML = `<div class="bubble" style="background:#202c38;"><div class="typing-indicator"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div>`;
+        chatDiv.appendChild(typingDiv);
+        chatDiv.scrollTop = chatDiv.scrollHeight;
+    }
+
+    function hideTyping() {
+        const indicator = document.getElementById("typingIndicator");
+        if (indicator) indicator.remove();
+    }
+
+    async function askAI(userMessage) {
+        try {
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${API_KEY}`,
+                    "HTTP-Referer": window.location.href,
+                    "X-Title": "WhatsApp AI"
+                },
+                body: JSON.stringify({
+                    model: "deepseek/deepseek-chat",
+                    messages: [
+                        { role: "system", content: "أنت مساعد واتساب ذكي، أسلوبك مختصر، لطيف وعملي. رد بطريقة محادثة طبيعية." },
+                        ...chatHistory.slice(-20),
+                        { role: "user", content: userMessage }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 500
+                })
+            });
+            const data = await response.json();
+            if (data.choices && data.choices[0]) {
+                return data.choices[0].message.content;
+            } else {
+                console.error("API error:", data);
+                return "⚠️ عطل مؤقت، حاول مرة أخرى.";
+            }
+        } catch (err) {
+            console.error(err);
+            return "⚠️ خطأ في الاتصال بالإنترنت أو الخادم.";
+        }
+    }
+
+    async function handleSendMessage(msg) {
+        if (!msg.trim()) return;
+        addMessageToUI(msg, "user");
+        chatHistory.push({ role: "user", content: msg });
+        saveMemory();
+
+        showTyping();
+        const aiReply = await askAI(msg);
+        hideTyping();
+
+        addMessageToUI(aiReply, "ai");
+        chatHistory.push({ role: "assistant", content: aiReply });
+        saveMemory();
+    }
+
+    // ------------------- التعرف على الصوت (يعمل) -------------------
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null;
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.lang = "ar-EG";
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.onresult = (event) => {
+            const voiceText = event.results[0][0].transcript;
+            document.getElementById("messageInput").value = voiceText;
+            handleSendMessage(voiceText);
+        };
+        recognition.onerror = () => {
+            addMessageToUI("🎤 لم أستطع سماعك، حاول مرة أخرى.", "ai");
+        };
+    } else {
+        console.warn("SpeechRecognition not supported");
+    }
+
+    // ------------------- الإيموجي -------------------
+    let emojiPicker = null;
+    const emojiBtn = document.getElementById("emojiBtn");
+    const inputField = document.getElementById("messageInput");
+
+    emojiBtn.addEventListener("click", () => {
+        // لو الـ picker موجود نشيله
+        if (emojiPicker && document.body.contains(emojiPicker)) {
+            emojiPicker.remove();
+            emojiPicker = null;
+            return;
+        }
+        // نحمله ديناميكيًا لآخر لحظة عشان يظهر
+        import('https://cdn.jsdelivr.net/npm/emoji-picker-element@1.21.0/index.js').then(module => {
+            const EmojiPicker = module.default;
+            emojiPicker = new EmojiPicker();
+            emojiPicker.style.position = "absolute";
+            emojiPicker.style.bottom = "80px";
+            emojiPicker.style.right = "20px";
+            emojiPicker.style.zIndex = "1000";
+            document.body.appendChild(emojiPicker);
+
+            emojiPicker.addEventListener("emoji-click", event => {
+                inputField.value += event.detail.unicode;
+                emojiPicker.remove();
+                emojiPicker = null;
+            });
+        }).catch(err => console.error("فشل تحميل الإيموجي", err));
+    });
+
+    // ------------------- ربط الأزرار -------------------
+    document.getElementById("sendBtn").addEventListener("click", () => {
+        const input = document.getElementById("messageInput");
+        const text = input.value.trim();
+        if (text) {
+            handleSendMessage(text);
+            input.value = "";
+        }
+    });
+
+    if (recognition) {
+        document.getElementById("micBtn").addEventListener("click", () => {
+            recognition.start();
+        });
+    } else {
+        document.getElementById("micBtn").addEventListener("click", () => {
+            addMessageToUI("⚠️ متصفحك لا يدعم خاصية الصوت. جرب Chrome أو Edge.", "ai");
+        });
+    }
+
+    document.getElementById("messageInput").addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            document.getElementById("sendBtn").click();
+        }
+    });
+
+    // استعادة المحادثة القديمة
+    function restoreHistory() {
+        for (let msg of chatHistory) {
+            addMessageToUI(msg.content, msg.role === "user" ? "user" : "ai");
+        }
+    }
+
+    loadMemory();
+    restoreHistory();
+    if (chatHistory.length === 0) {
+        addMessageToUI("🧠 مرحباً! أنا ذكاء اصطناعي بذاكرة دائمة. اسألني أي حاجة 😎", "ai");
+    }
+</script>
+</body>
+</html>
