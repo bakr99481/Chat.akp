@@ -1,419 +1,850 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>واتس AI · شغال بالكامل</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>مكتبتي - فيديوهات مع ملاحظات</title>
+    <meta name="description" content="منصة فيديوهات شخصية مع إمكانية تحديد أجزاء وإضافة ملاحظات">
+    <meta name="theme-color" content="#020617">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="مكتبتي">
+
+    <!-- Manifest PWA -->
+    <link rel="manifest" href="data:application/manifest+json,{
+      %22name%22:%22%D9%85%D9%83%D8%AA%D8%A8%D8%AA%D9%8A%20-%20%D9%81%D9%8A%D8%AF%D9%8A%D9%88%D9%87%D8%A7%D8%AA%22,
+      %22short_name%22:%22%D9%85%D9%83%D8%AA%D8%A8%D8%AA%D9%8A%22,
+      %22start_url%22:%22.%22,
+      %22display%22:%22standalone%22,
+      %22background_color%22:%22%23020617%22,
+      %22theme_color%22:%22%2300f2fe%22,
+      %22icons%22:[
+        {%22src%22:%22https://cdn-icons-png.flaticon.com/512/2838/2838912.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22},
+        {%22src%22:%22https://cdn-icons-png.flaticon.com/512/2838/2838912.png%22,%22sizes%22:%22192x192%22,%22type%22:%22image/png%22}
+      ]
+    }">
+
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Tajawal', sans-serif;
         }
 
         body {
-            background: #0d141e;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background: #020617;
+            padding: 20px;
+            min-height: 100vh;
         }
 
-        .whatsapp-container {
-            width: 100%;
-            height: 100vh;
-            background: #121c28;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .wa-header {
-            background: #1f2c38;
-            padding: 14px 20px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            border-bottom: 1px solid #2a3942;
-        }
-
-        .avatar {
-            width: 42px;
-            height: 42px;
-            background: linear-gradient(135deg, #25D366, #075E54);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.4rem;
-        }
-
-        .contact-info {
-            flex: 1;
-        }
-
-        .contact-name {
+        /* زر التثبيت */
+        .install-pwa {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            background: rgba(0, 242, 254, 0.2);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 242, 254, 0.5);
+            border-radius: 60px;
+            padding: 8px 20px;
+            color: #00f2fe;
             font-weight: bold;
-            color: #e9edef;
-            font-size: 1.1rem;
-        }
-
-        .contact-status {
-            font-size: 0.7rem;
-            color: #8696a0;
-        }
-
-        .chat-area {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            background-image: radial-gradient(#1f2c38 1px, transparent 1px);
-            background-size: 24px 24px;
-        }
-
-        .message {
-            display: flex;
-            max-width: 80%;
-            margin-bottom: 6px;
-        }
-
-        .message.ai {
-            align-self: flex-start;
-            justify-content: flex-start;
-        }
-
-        .message.user {
-            align-self: flex-end;
-            justify-content: flex-end;
-        }
-
-        .bubble {
-            padding: 10px 14px;
-            border-radius: 18px;
-            font-size: 0.9rem;
-            line-height: 1.4;
-            word-wrap: break-word;
-        }
-
-        .ai .bubble {
-            background: #202c38;
-            color: #e9edef;
-            border-top-left-radius: 4px;
-        }
-
-        .user .bubble {
-            background: #005c4b;
-            color: white;
-            border-top-right-radius: 4px;
-        }
-
-        .timestamp {
-            font-size: 0.65rem;
-            color: #8696a0;
-            margin-top: 4px;
-            text-align: right;
-            padding-right: 8px;
-        }
-
-        .input-bar {
-            background: #1f2c38;
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-top: 1px solid #2a3942;
-        }
-
-        .input-bar input {
-            flex: 1;
-            background: #2a3942;
-            border: none;
-            padding: 12px 16px;
-            border-radius: 28px;
-            color: white;
-            font-size: 0.9rem;
-            outline: none;
-        }
-
-        .input-bar input::placeholder {
-            color: #8696a0;
-        }
-
-        .input-bar button {
-            background: #005c4b;
-            border: none;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            color: white;
-            font-size: 1.3rem;
+            font-size: 13px;
             cursor: pointer;
-            transition: 0.1s;
+            z-index: 5000;
             display: flex;
             align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+        .install-pwa:hover {
+            background: #00f2fe;
+            color: #020617;
+        }
+        .install-pwa.hidden { display: none; }
+
+        /* منيو مخصص */
+        .custom-context-menu {
+            position: fixed;
+            background: #0f172a;
+            border: 1px solid #00f2fe;
+            border-radius: 20px;
+            padding: 8px 0;
+            min-width: 150px;
+            z-index: 10000;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            backdrop-filter: blur(20px);
+            display: none;
+        }
+        .custom-context-menu button {
+            display: block;
+            width: 100%;
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 0.9rem;
+            text-align: right;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .custom-context-menu button:hover {
+            background: rgba(0, 242, 254, 0.2);
+            color: #00f2fe;
+        }
+        .custom-context-menu hr {
+            border-color: rgba(0, 242, 254, 0.3);
+            margin: 5px 0;
+        }
+
+        .wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border-radius: 40px;
+            padding: 30px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 180px));
+            gap: 20px;
             justify-content: center;
         }
 
-        .mic-btn {
-            background: #2a3942 !important;
-        }
-
-        .emoji-btn {
-            background: #2a3942 !important;
-        }
-
-        .typing-indicator {
+        .subject-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            aspect-ratio: 1 / 0.9;
             display: flex;
-            gap: 4px;
-            align-items: center;
-            padding: 6px 12px;
-            background: #202c38;
-            width: fit-content;
-            border-radius: 20px;
+            flex-direction: column;
+            padding: 20px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            position: relative;
+        }
+        .subject-card:hover {
+            transform: translateY(-5px);
+            border-color: #00f2fe;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.2);
+            background: rgba(255, 255, 255, 0.07);
+        }
+        .subject-icon { font-size: 3rem; margin-bottom: 15px; }
+        .subject-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #00f2fe, #7000ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .dot {
-            width: 6px;
-            height: 6px;
-            background: #8696a0;
+        .btn-add-circle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 55px;
+            height: 55px;
             border-radius: 50%;
-            animation: bounce 1.2s infinite;
+            background: linear-gradient(135deg, #00f2fe, #7000ff);
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
+            transition: 0.2s;
+            z-index: 1000;
+        }
+        .btn-add-circle:hover { transform: scale(1.05); }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(12px);
+            z-index: 5000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #0f172a;
+            border: 2px solid #00f2fe;
+            border-radius: 32px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+        }
+        .modal-content input, .modal-content textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid #00f2fe;
+            border-radius: 20px;
+            color: white;
+            font-size: 1rem;
+        }
+        .modal-content textarea { resize: vertical; }
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .modal-buttons button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-confirm { background: #00f2fe; color: #020617; border: none; }
+        .btn-cancel { background: transparent; border: 1px solid #94a3b8; color: #94a3b8; }
+
+        .subject-videos-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #020617;
+            z-index: 4000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .back-btn {
+            background: rgba(0, 242, 254, 0.2);
+            border: 1px solid #00f2fe;
+            border-radius: 40px;
+            padding: 8px 20px;
+            color: #00f2fe;
+            cursor: pointer;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .videos-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .video-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            border-radius: 20px;
+            padding: 18px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .video-item:hover {
+            background: rgba(0, 242, 254, 0.1);
+            transform: translateX(-5px);
+        }
+        .video-title {
+            color: white;
+            font-weight: bold;
+            display: block;
+        }
+        .add-video-btn-circle {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #00f2fe;
+            border: none;
+            color: #020617;
+            font-size: 26px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 15px #00f2fe;
+            z-index: 1000;
         }
 
-        @keyframes bounce {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-6px); }
+        .video-player-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #020617;
+            z-index: 5000;
+            overflow-y: auto;
+            padding: 15px;
+        }
+        .close-video {
+            background: rgba(255, 50, 50, 0.8);
+            border: none;
+            border-radius: 30px;
+            padding: 6px 15px;
+            color: white;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        .video-container {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 24px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        .video-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .fullscreen-btn {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.6);
+            border: none;
+            border-radius: 30px;
+            padding: 8px 15px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            z-index: 10;
+        }
+        .video-under-layout {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .parts-section {
+            flex: 1.5;
+            min-width: 250px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            overflow: hidden;
+        }
+        .parts-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: rgba(0, 242, 254, 0.1);
+            border-bottom: 1px solid rgba(0, 242, 254, 0.3);
+        }
+        .parts-header .description-title {
+            color: #00f2fe;
+            font-weight: bold;
+            font-size: 0.9rem;
+            flex: 1;
+            word-break: break-word;
+            margin-left: 10px;
+        }
+        .three-dots-btn {
+            background: transparent;
+            border: none;
+            color: #00f2fe;
+            font-size: 22px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 5px 12px;
+            border-radius: 30px;
+            letter-spacing: 4px;
+        }
+        .three-dots-btn:hover {
+            background: rgba(0, 242, 254, 0.2);
+        }
+        .parts-list {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .parts-list.hidden {
+            display: none;
+        }
+        .part-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+        }
+        .part-item:hover {
+            background: rgba(0, 242, 254, 0.1);
+        }
+        .part-time {
+            color: #00f2fe;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        .part-note {
+            color: white;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            word-break: break-word;
+        }
+        .add-part-btn {
+            background: transparent;
+            border-top: 1px solid rgba(0, 242, 254, 0.3);
+            color: #00f2fe;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .add-part-btn:hover {
+            background: rgba(0, 242, 254, 0.1);
         }
 
-        .chat-area::-webkit-scrollbar { width: 4px; }
-        .chat-area::-webkit-scrollbar-track { background: transparent; }
-        .chat-area::-webkit-scrollbar-thumb { background: #2a3942; border-radius: 10px; }
+        @media (max-width: 700px) {
+            .video-under-layout { flex-direction: column; }
+            .btn-add-circle { width: 50px; height: 50px; font-size: 24px; }
+        }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
 
-<div class="whatsapp-container">
-    <div class="wa-header">
-        <div class="avatar"><i class="fas fa-robot"></i></div>
-        <div class="contact-info">
-            <div class="contact-name">AI · الذكي الفائق</div>
-            <div class="contact-status">🟢 متصل · ذاكرة دائمة</div>
-        </div>
-    </div>
+<button id="installBtn" class="install-pwa">📱 تثبيت التطبيق</button>
 
-    <div class="chat-area" id="chatMessages">
-        <div class="message ai">
-            <div class="bubble">
-                🧠 مرحباً! أنا ذكاء اصطناعي بذاكرة دائمة وبصوت.<br>
-                🔥 اسألني أي حاجة، أنا فاهمك وبفتكر كل اللي بنقوله.
-                <div class="timestamp">الآن</div>
-            </div>
-        </div>
-    </div>
+<div class="wrapper">
+    <div class="subjects-grid" id="subjectsGrid"></div>
+</div>
 
-    <div class="input-bar">
-        <input type="text" id="messageInput" placeholder="اكتب رسالة..." autocomplete="off">
-        <button id="emojiBtn" class="emoji-btn"><i class="far fa-smile-wink"></i></button>
-        <button id="micBtn" class="mic-btn"><i class="fas fa-microphone"></i></button>
-        <button id="sendBtn"><i class="fas fa-paper-plane"></i></button>
+<button class="btn-add-circle" id="addSubjectFloatBtn">+</button>
+
+<!-- مودال إضافة مادة -->
+<div id="subjectModal" class="modal">
+    <div class="modal-content">
+        <h3 style="color:#00f2fe;">📚 مادة جديدة</h3>
+        <input type="text" id="subjectName" placeholder="اسم المادة">
+        <input type="text" id="subjectIcon" placeholder="رمز تعبيري" value="📹">
+        <div class="modal-buttons">
+            <button class="btn-confirm" id="confirmSubjectBtn">إضافة</button>
+            <button class="btn-cancel" id="cancelSubjectBtn">إلغاء</button>
+        </div>
     </div>
 </div>
 
+<!-- شاشة قائمة الفيديوهات -->
+<div id="videosListScreen" class="subject-videos-screen">
+    <button class="back-btn" id="backToSubjectsBtn">← العودة</button>
+    <div class="videos-list" id="videosList"></div>
+    <button class="add-video-btn-circle" id="addVideoFloatBtn">+</button>
+</div>
+
+<!-- مودال إضافة فيديو -->
+<div id="videoModal" class="modal">
+    <div class="modal-content">
+        <h3 style="color:#00f2fe;">🎬 فيديو جديد</h3>
+        <input type="text" id="videoTitleInput" placeholder="عنوان الفيديو">
+        <input type="text" id="videoUrlInput" placeholder="رابط يوتيوب">
+        <textarea id="videoDescInput" rows="3" placeholder="الوصف (هذا النص سيظهر مكان كلمة الأجزاء)"></textarea>
+        <div class="modal-buttons">
+            <button class="btn-confirm" id="confirmVideoBtn">إضافة</button>
+            <button class="btn-cancel" id="cancelVideoBtn">إلغاء</button>
+        </div>
+    </div>
+</div>
+
+<!-- شاشة تشغيل الفيديو -->
+<div id="playerScreen" class="video-player-screen">
+    <button class="close-video" id="closePlayerBtn">✖ إغلاق</button>
+    
+    <div class="video-container" id="videoContainer">
+        <iframe id="videoIframe" src="" allowfullscreen></iframe>
+        <button class="fullscreen-btn" id="fullscreenBtn">⛶ ملء الشاشة</button>
+    </div>
+
+    <div class="video-under-layout">
+        <div class="parts-section">
+            <div class="parts-header">
+                <span class="description-title" id="descriptionTitle">📝 الوصف</span>
+                <button class="three-dots-btn" id="togglePartsBtn">⋮</button>
+            </div>
+            <div class="parts-list" id="partsList"></div>
+            <div class="add-part-btn" id="openAddPartBtn">+ إضافة مقطع جديد</div>
+        </div>
+        <div style="flex:2; min-width:200px;"></div>
+    </div>
+</div>
+
+<!-- مودال إضافة جزء -->
+<div id="partModal" class="modal">
+    <div class="modal-content">
+        <h3 style="color:#00f2fe;">✂️ إضافة مقطع</h3>
+        <input type="number" id="partStart" step="0.1" placeholder="وقت البداية (ثواني)">
+        <input type="number" id="partEnd" step="0.1" placeholder="وقت النهاية (اختياري)">
+        <textarea id="partNoteText" rows="3" placeholder="ملاحظتك على هذا المقطع..."></textarea>
+        <div class="modal-buttons">
+            <button class="btn-confirm" id="savePartBtn">حفظ</button>
+            <button class="btn-cancel" id="cancelPartBtn">إلغاء</button>
+        </div>
+    </div>
+</div>
+
+<div id="contextMenu" class="custom-context-menu">
+    <button id="menuEditPart">✏️ تعديل المقطع</button>
+    <hr>
+    <button id="menuDeletePart">🗑️ حذف المقطع</button>
+</div>
+
 <script>
-    // ------------------- مفتاح OpenRouter (شغال فعليًا) -------------------
-    const API_KEY = "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";
-    const API_URL = "https://openrouter.ai/api/v1/chat/completions";
+    let subjects = [];
+    let currentSubjectId = null;
+    let currentVideoIndex = -1;
+    let currentPartIndex = null;
+    let contextMenuPartIndex = null;
 
-    let chatHistory = [];
+    const subjectsGrid = document.getElementById('subjectsGrid');
+    const addSubjectFloatBtn = document.getElementById('addSubjectFloatBtn');
+    const subjectModal = document.getElementById('subjectModal');
+    const subjectNameInput = document.getElementById('subjectName');
+    const subjectIconInput = document.getElementById('subjectIcon');
+    const confirmSubjectBtn = document.getElementById('confirmSubjectBtn');
+    const cancelSubjectBtn = document.getElementById('cancelSubjectBtn');
 
-    // تحميل الذاكرة التاريخية
-    function loadMemory() {
-        const saved = localStorage.getItem("whats_ai_memory");
-        if (saved) chatHistory = JSON.parse(saved);
-        else chatHistory = [];
-    }
+    const videosListScreen = document.getElementById('videosListScreen');
+    const videosListDiv = document.getElementById('videosList');
+    const backToSubjectsBtn = document.getElementById('backToSubjectsBtn');
+    const addVideoFloatBtn = document.getElementById('addVideoFloatBtn');
+    const videoModal = document.getElementById('videoModal');
+    const videoTitleInput = document.getElementById('videoTitleInput');
+    const videoUrlInput = document.getElementById('videoUrlInput');
+    const videoDescInput = document.getElementById('videoDescInput');
+    const confirmVideoBtn = document.getElementById('confirmVideoBtn');
+    const cancelVideoBtn = document.getElementById('cancelVideoBtn');
 
-    function saveMemory() {
-        localStorage.setItem("whats_ai_memory", JSON.stringify(chatHistory.slice(-100)));
-    }
+    const playerScreen = document.getElementById('playerScreen');
+    const closePlayerBtn = document.getElementById('closePlayerBtn');
+    const videoIframe = document.getElementById('videoIframe');
+    const descriptionTitle = document.getElementById('descriptionTitle');
+    const togglePartsBtn = document.getElementById('togglePartsBtn');
+    const partsListDiv = document.getElementById('partsList');
+    const openAddPartBtn = document.getElementById('openAddPartBtn');
+    const partModal = document.getElementById('partModal');
+    const partStart = document.getElementById('partStart');
+    const partEnd = document.getElementById('partEnd');
+    const partNoteText = document.getElementById('partNoteText');
+    const savePartBtn = document.getElementById('savePartBtn');
+    const cancelPartBtn = document.getElementById('cancelPartBtn');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const videoContainer = document.getElementById('videoContainer');
 
-    function addMessageToUI(text, sender, timestamp = null) {
-        const chatDiv = document.getElementById("chatMessages");
-        const messageWrapper = document.createElement("div");
-        messageWrapper.className = `message ${sender}`;
-        const bubble = document.createElement("div");
-        bubble.className = "bubble";
-        bubble.innerHTML = text.replace(/\n/g, "<br>");
-        const timeSpan = document.createElement("div");
-        timeSpan.className = "timestamp";
-        const now = timestamp || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        timeSpan.innerText = now;
-        bubble.appendChild(timeSpan);
-        messageWrapper.appendChild(bubble);
-        chatDiv.appendChild(messageWrapper);
-        chatDiv.scrollTop = chatDiv.scrollHeight;
-    }
+    const contextMenu = document.getElementById('contextMenu');
+    const menuEditPart = document.getElementById('menuEditPart');
+    const menuDeletePart = document.getElementById('menuDeletePart');
 
-    function showTyping() {
-        const chatDiv = document.getElementById("chatMessages");
-        const typingDiv = document.createElement("div");
-        typingDiv.className = "message ai";
-        typingDiv.id = "typingIndicator";
-        typingDiv.innerHTML = `<div class="bubble" style="background:#202c38;"><div class="typing-indicator"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div>`;
-        chatDiv.appendChild(typingDiv);
-        chatDiv.scrollTop = chatDiv.scrollHeight;
-    }
-
-    function hideTyping() {
-        const indicator = document.getElementById("typingIndicator");
-        if (indicator) indicator.remove();
-    }
-
-    async function askAI(userMessage) {
-        try {
-            const response = await fetch(API_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${API_KEY}`,
-                    "HTTP-Referer": window.location.href,
-                    "X-Title": "WhatsApp AI"
-                },
-                body: JSON.stringify({
-                    model: "deepseek/deepseek-chat",
-                    messages: [
-                        { role: "system", content: "أنت مساعد واتساب ذكي، أسلوبك مختصر، لطيف وعملي. رد بطريقة محادثة طبيعية." },
-                        ...chatHistory.slice(-20),
-                        { role: "user", content: userMessage }
-                    ],
-                    temperature: 0.7,
-                    max_tokens: 500
-                })
-            });
-            const data = await response.json();
-            if (data.choices && data.choices[0]) {
-                return data.choices[0].message.content;
-            } else {
-                console.error("API error:", data);
-                return "⚠️ عطل مؤقت، حاول مرة أخرى.";
-            }
-        } catch (err) {
-            console.error(err);
-            return "⚠️ خطأ في الاتصال بالإنترنت أو الخادم.";
+    function saveData() { localStorage.setItem('myVideoLibrary3', JSON.stringify(subjects)); }
+    
+    function loadData() {
+        const saved = localStorage.getItem('myVideoLibrary3');
+        if (saved) { subjects = JSON.parse(saved); }
+        else {
+            subjects = [
+                { id: Date.now(), name: 'JavaScript', icon: '💻', videos: [{ id: Date.now(), title: 'أساسيات JavaScript', url: 'https://www.youtube.com/embed/dQw4w9WgXcQ', description: 'شرح الحلقات في JavaScript بالتفصيل الممل', parts: [{ start: 30, end: 65, note: 'مقدمة مهمة' }, { start: 120, end: 180, note: 'شرح الـ Functions' }] }] }
+            ];
+            saveData();
         }
+        renderSubjects();
     }
 
-    async function handleSendMessage(msg) {
-        if (!msg.trim()) return;
-        addMessageToUI(msg, "user");
-        chatHistory.push({ role: "user", content: msg });
-        saveMemory();
-
-        showTyping();
-        const aiReply = await askAI(msg);
-        hideTyping();
-
-        addMessageToUI(aiReply, "ai");
-        chatHistory.push({ role: "assistant", content: aiReply });
-        saveMemory();
+    function getEmbedUrl(url) {
+        if (!url) return '';
+        let videoId = '';
+        if (url.includes('youtube.com/embed/')) {
+            const match = url.match(/youtube\.com\/embed\/([^?&]+)/);
+            if (match) videoId = match[1];
+        } else if (url.includes('youtu.be/')) {
+            const match = url.match(/youtu\.be\/([^?&]+)/);
+            if (match) videoId = match[1];
+        } else if (url.includes('youtube.com/watch')) {
+            const match = url.match(/[?&]v=([^?&]+)/);
+            if (match) videoId = match[1];
+        } else { return url; }
+        return `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;
     }
 
-    // ------------------- التعرف على الصوت (يعمل) -------------------
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition = null;
-    if (SpeechRecognition) {
-        recognition = new SpeechRecognition();
-        recognition.lang = "ar-EG";
-        recognition.continuous = false;
-        recognition.interimResults = false;
-        recognition.onresult = (event) => {
-            const voiceText = event.results[0][0].transcript;
-            document.getElementById("messageInput").value = voiceText;
-            handleSendMessage(voiceText);
-        };
-        recognition.onerror = () => {
-            addMessageToUI("🎤 لم أستطع سماعك، حاول مرة أخرى.", "ai");
-        };
-    } else {
-        console.warn("SpeechRecognition not supported");
-    }
-
-    // ------------------- الإيموجي -------------------
-    let emojiPicker = null;
-    const emojiBtn = document.getElementById("emojiBtn");
-    const inputField = document.getElementById("messageInput");
-
-    emojiBtn.addEventListener("click", () => {
-        // لو الـ picker موجود نشيله
-        if (emojiPicker && document.body.contains(emojiPicker)) {
-            emojiPicker.remove();
-            emojiPicker = null;
-            return;
-        }
-        // نحمله ديناميكيًا لآخر لحظة عشان يظهر
-        import('https://cdn.jsdelivr.net/npm/emoji-picker-element@1.21.0/index.js').then(module => {
-            const EmojiPicker = module.default;
-            emojiPicker = new EmojiPicker();
-            emojiPicker.style.position = "absolute";
-            emojiPicker.style.bottom = "80px";
-            emojiPicker.style.right = "20px";
-            emojiPicker.style.zIndex = "1000";
-            document.body.appendChild(emojiPicker);
-
-            emojiPicker.addEventListener("emoji-click", event => {
-                inputField.value += event.detail.unicode;
-                emojiPicker.remove();
-                emojiPicker = null;
-            });
-        }).catch(err => console.error("فشل تحميل الإيموجي", err));
-    });
-
-    // ------------------- ربط الأزرار -------------------
-    document.getElementById("sendBtn").addEventListener("click", () => {
-        const input = document.getElementById("messageInput");
-        const text = input.value.trim();
-        if (text) {
-            handleSendMessage(text);
-            input.value = "";
-        }
-    });
-
-    if (recognition) {
-        document.getElementById("micBtn").addEventListener("click", () => {
-            recognition.start();
-        });
-    } else {
-        document.getElementById("micBtn").addEventListener("click", () => {
-            addMessageToUI("⚠️ متصفحك لا يدعم خاصية الصوت. جرب Chrome أو Edge.", "ai");
+    function renderSubjects() {
+        subjectsGrid.innerHTML = '';
+        subjects.forEach(sub => {
+            const card = document.createElement('div');
+            card.className = 'subject-card';
+            card.innerHTML = `<div class="subject-icon">${sub.icon || '📚'}</div><div class="subject-name">${escapeHtml(sub.name)}</div>`;
+            card.addEventListener('click', () => openVideosList(sub.id));
+            let pressTimer;
+            card.addEventListener('mousedown', () => { pressTimer = setTimeout(() => { if(confirm(`🗑️ حذف مادة "${sub.name}"؟`)) { subjects = subjects.filter(s => s.id != sub.id); saveData(); renderSubjects(); } }, 500); });
+            card.addEventListener('mouseup', () => clearTimeout(pressTimer));
+            card.addEventListener('mouseleave', () => clearTimeout(pressTimer));
+            card.addEventListener('touchstart', () => { pressTimer = setTimeout(() => { if(confirm(`🗑️ حذف "${sub.name}"؟`)) { subjects = subjects.filter(s => s.id != sub.id); saveData(); renderSubjects(); } }, 500); });
+            card.addEventListener('touchend', () => clearTimeout(pressTimer));
+            subjectsGrid.appendChild(card);
         });
     }
 
-    document.getElementById("messageInput").addEventListener("keypress", (e) => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            document.getElementById("sendBtn").click();
+    function openVideosList(subjectId) {
+        currentSubjectId = subjectId;
+        const subject = subjects.find(s => s.id == subjectId);
+        videosListDiv.innerHTML = '';
+        if (!subject.videos || subject.videos.length === 0) {
+            videosListDiv.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:40px;">📭 لا توجد فيديوهات</div>';
+        } else {
+            subject.videos.forEach((video, idx) => {
+                const videoItem = document.createElement('div');
+                videoItem.className = 'video-item';
+                videoItem.innerHTML = `<span class="video-title">🎬 ${escapeHtml(video.title)}</span>`;
+                videoItem.addEventListener('click', () => openVideoPlayer(subjectId, idx));
+                let pressTimer;
+                videoItem.addEventListener('mousedown', () => { pressTimer = setTimeout(() => { if(confirm(`🗑️ حذف فيديو "${video.title}"؟`)) { subject.videos.splice(idx, 1); saveData(); openVideosList(subjectId); } }, 500); });
+                videoItem.addEventListener('mouseup', () => clearTimeout(pressTimer));
+                videoItem.addEventListener('mouseleave', () => clearTimeout(pressTimer));
+                videoItem.addEventListener('touchstart', () => { pressTimer = setTimeout(() => { if(confirm(`🗑️ حذف "${video.title}"؟`)) { subject.videos.splice(idx, 1); saveData(); openVideosList(subjectId); } }, 500); });
+                videoItem.addEventListener('touchend', () => clearTimeout(pressTimer));
+                videosListDiv.appendChild(videoItem);
+            });
+        }
+        videosListScreen.style.display = 'block';
+    }
+
+    function openVideoPlayer(subjectId, videoIdx) {
+        currentSubjectId = subjectId;
+        currentVideoIndex = videoIdx;
+        const video = subjects.find(s => s.id == subjectId).videos[videoIdx];
+        
+        videoIframe.src = getEmbedUrl(video.url);
+        descriptionTitle.innerHTML = `📝 ${escapeHtml(video.description || 'لا يوجد وصف')}`;
+        renderParts();
+        playerScreen.style.display = 'block';
+    }
+
+    function renderParts() {
+        const subject = subjects.find(s => s.id == currentSubjectId);
+        const video = subject.videos[currentVideoIndex];
+        partsListDiv.innerHTML = '';
+        if (!video.parts || video.parts.length === 0) {
+            partsListDiv.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:20px;">📌 لا توجد أجزاء محددة</div>';
+        } else {
+            video.parts.forEach((part, idx) => {
+                const partDiv = document.createElement('div');
+                partDiv.className = 'part-item';
+                partDiv.innerHTML = `<div class="part-time">⏱️ ${formatTime(part.start)}${part.end ? ` - ${formatTime(part.end)}` : ''}</div><div class="part-note">📝 ${escapeHtml(part.note)}</div>`;
+                partDiv.addEventListener('click', () => seekToTime(part.start));
+                
+                let pressTimer;
+                partDiv.addEventListener('mousedown', (e) => {
+                    pressTimer = setTimeout(() => {
+                        contextMenuPartIndex = idx;
+                        showContextMenu(e.clientX, e.clientY);
+                    }, 500);
+                });
+                partDiv.addEventListener('mouseup', () => clearTimeout(pressTimer));
+                partDiv.addEventListener('mouseleave', () => clearTimeout(pressTimer));
+                partDiv.addEventListener('touchstart', (e) => {
+                    pressTimer = setTimeout(() => {
+                        contextMenuPartIndex = idx;
+                        const touch = e.touches[0];
+                        showContextMenu(touch.clientX, touch.clientY);
+                    }, 500);
+                });
+                partDiv.addEventListener('touchend', () => clearTimeout(pressTimer));
+                partsListDiv.appendChild(partDiv);
+            });
+        }
+    }
+
+    function showContextMenu(x, y) {
+        contextMenu.style.display = 'block';
+        contextMenu.style.left = x + 'px';
+        contextMenu.style.top = y + 'px';
+        setTimeout(() => document.addEventListener('click', hideContextMenu), 10);
+    }
+
+    function hideContextMenu() { contextMenu.style.display = 'none'; document.removeEventListener('click', hideContextMenu); }
+
+    function editPartFromMenu() {
+        if (contextMenuPartIndex !== null) {
+            const subject = subjects.find(s => s.id == currentSubjectId);
+            const part = subject.videos[currentVideoIndex].parts[contextMenuPartIndex];
+            partStart.value = part.start;
+            partEnd.value = part.end || '';
+            partNoteText.value = part.note;
+            currentPartIndex = contextMenuPartIndex;
+            partModal.style.display = 'flex';
+            hideContextMenu();
+        }
+    }
+
+    function deletePartFromMenu() {
+        if (contextMenuPartIndex !== null) {
+            const subject = subjects.find(s => s.id == currentSubjectId);
+            subject.videos[currentVideoIndex].parts.splice(contextMenuPartIndex, 1);
+            saveData();
+            renderParts();
+            hideContextMenu();
+        }
+    }
+
+    function formatTime(sec) {
+        const mins = Math.floor(sec / 60);
+        const secs = Math.floor(sec % 60);
+        return `${mins}:${secs.toString().padStart(2,'0')}`;
+    }
+
+    function seekToTime(seconds) {
+        if (videoIframe && videoIframe.contentWindow) {
+            videoIframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'seekTo', args: [seconds, true] }), '*');
+        }
+    }
+
+    function addNewSubject() {
+        const name = subjectNameInput.value.trim();
+        if (!name) { alert('أدخل اسم المادة'); return; }
+        const icon = subjectIconInput.value.trim() || '📹';
+        subjects.push({ id: Date.now(), name, icon, videos: [] });
+        saveData();
+        renderSubjects();
+        subjectModal.style.display = 'none';
+        subjectNameInput.value = '';
+    }
+
+    function addNewVideo() {
+        const title = videoTitleInput.value.trim();
+        const url = videoUrlInput.value.trim();
+        const desc = videoDescInput.value.trim();
+        if (!title || !url) { alert('أدخل عنوان ورابط الفيديو'); return; }
+        const subject = subjects.find(s => s.id == currentSubjectId);
+        if (subject) {
+            if (!subject.videos) subject.videos = [];
+            subject.videos.push({ id: Date.now(), title, url, description: desc, parts: [] });
+            saveData();
+            openVideosList(currentSubjectId);
+        }
+        videoModal.style.display = 'none';
+        videoTitleInput.value = '';
+        videoUrlInput.value = '';
+        videoDescInput.value = '';
+    }
+
+    function savePart() {
+        const start = parseFloat(partStart.value);
+        if (isNaN(start) || start < 0) { alert('أدخل وقت بداية صحيح'); return; }
+        const note = partNoteText.value.trim() || 'مقطع جديد';
+        const end = partEnd.value ? parseFloat(partEnd.value) : null;
+        const subject = subjects.find(s => s.id == currentSubjectId);
+        const video = subject.videos[currentVideoIndex];
+        
+        if (currentPartIndex !== null && currentPartIndex >= 0) {
+            video.parts[currentPartIndex] = { start, end, note };
+            currentPartIndex = null;
+        } else {
+            if (!video.parts) video.parts = [];
+            video.parts.push({ start, end, note });
+        }
+        saveData();
+        renderParts();
+        partModal.style.display = 'none';
+        partStart.value = '';
+        partEnd.value = '';
+        partNoteText.value = '';
+    }
+
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) videoContainer.requestFullscreen().catch(() => {});
+        else document.exitFullscreen();
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+    }
+
+    // ====================== PWA التثبيت ======================
+    let deferredPrompt = null;
+    const installBtn = document.getElementById('installBtn');
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.classList.remove('hidden');
+    });
+    
+    installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') installBtn.classList.add('hidden');
+            deferredPrompt = null;
+        } else {
+            alert('✨ للتثبيت: اضغط قائمة المتصفح (٣ نقاط) واختر "تثبيت التطبيق"');
         }
     });
-
-    // استعادة المحادثة القديمة
-    function restoreHistory() {
-        for (let msg of chatHistory) {
-            addMessageToUI(msg.content, msg.role === "user" ? "user" : "ai");
-        }
+    
+    window.addEventListener('appinstalled', () => {
+        installBtn.classList.add('hidden');
+        deferredPrompt = null;
+    });
+    
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+        installBtn.style.display = 'none';
     }
 
-    loadMemory();
-    restoreHistory();
-    if (chatHistory.length === 0) {
-        addMessageToUI("🧠 مرحباً! أنا ذكاء اصطناعي بذاكرة دائمة. اسألني أي حاجة 😎", "ai");
+    // Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            const swCode = `const CACHE_NAME = 'my-library-v1';
+const urlsToCache = ['/'];
+self.addEventListener('install', e => {
+    e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache)));
+});
+self.addEventListener('fetch', e => {
+    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+});`;
+            const blob = new Blob([swCode], {type: 'application/javascript'});
+            const swUrl = URL.createObjectURL(blob);
+            navigator.serviceWorker.register(swUrl).then(() => console.log('SW registered'));
+        });
     }
+
+    addSubjectFloatBtn.onclick = () => subjectModal.style.display = 'flex';
+    confirmSubjectBtn.onclick = addNewSubject;
+    cancelSubjectBtn.onclick = () => subjectModal.style.display = 'none';
+    backToSubjectsBtn.onclick = () => videosListScreen.style.display = 'none';
+    addVideoFloatBtn.onclick = () => videoModal.style.display = 'flex';
+    confirmVideoBtn.onclick = addNewVideo;
+    cancelVideoBtn.onclick = () => videoModal.style.display = 'none';
+    closePlayerBtn.onclick = () => { playerScreen.style.display = 'none'; videoIframe.src = ''; };
+    openAddPartBtn.onclick = () => { currentPartIndex = null; partStart.value = ''; partEnd.value = ''; partNoteText.value = ''; partModal.style.display = 'flex'; };
+    savePartBtn.onclick = savePart;
+    cancelPartBtn.onclick = () => partModal.style.display = 'none';
+    fullscreenBtn.onclick = toggleFullscreen;
+    menuEditPart.onclick = editPartFromMenu;
+    menuDeletePart.onclick = deletePartFromMenu;
+
+    let partsVisible = true;
+    togglePartsBtn.onclick = () => {
+        const partsList = document.querySelector('#playerScreen .parts-list');
+        if (partsVisible) { partsList.classList.add('hidden'); partsVisible = false; }
+        else { partsList.classList.remove('hidden'); partsVisible = true; }
+    };
+
+    window.onclick = (e) => {
+        if (e.target === subjectModal) subjectModal.style.display = 'none';
+        if (e.target === videoModal) videoModal.style.display = 'none';
+        if (e.target === partModal) partModal.style.display = 'none';
+    };
+
+    loadData();
 </script>
 </body>
 </html>
